@@ -1,14 +1,28 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
+import SecurityConfig from './SecurityConfig';
 import SecurityRuleRepository from './SecurityRuleRepository';
 
 class HasPermission extends Component {
-    state = {
-        allowed: false
+    constructor() {
+        super();
+
+        this.state = {
+            allowed: false,
+            subject: {
+                id: 1,
+            }
+        };
+    
+        this.grantPermission = this.grantPermission.bind(this);
     }
 
     getAppliableRulesForPermission(permission) {
+
+        console.log(SecurityRuleRepository);
+
         return SecurityRuleRepository
             .getAllRules()
             .filter(rule => rule.satisfy(permission));
@@ -22,15 +36,18 @@ class HasPermission extends Component {
      * @param {array} securityRules 보안 규칙의 배열
      */
     judgeSecurityRules(target, securityRules) {
-        securityRules.forEach(rule => {
-            if (rule.judge(target)) {
-                this.grantPermission();
-                break;
-            }
-        });
+        // judge가 비동기 함수이기 때문에 중간에 멈추기 애매함.
+        // 콜백함수를 다시 지정하는 것으로 해결할 수 있을 것 같긴 함.
+
+        const { subject } = this.props;
+        const environment = { subject, target };
+
+        securityRules.forEach(rule => console.log('applying:', rule.print()) || rule.judge(environment, this.grantPermission));
     }
 
     grantPermission() {
+        console.log('Permission Granted!');
+
         this.setState({ allowed: true });
     }
 
@@ -47,9 +64,13 @@ class HasPermission extends Component {
     }
 }
 
-HasPermission.PropTypes = {
+HasPermission.propTypes = {
     target: PropTypes.object.isRequired,
     permission: PropTypes.string.isRequired
 }
 
-export default HasPermission;
+const mapStateToProps = state => ({
+    subject: SecurityConfig.getSubjectFromState(state)
+});
+
+export default connect(mapStateToProps)(HasPermission);
