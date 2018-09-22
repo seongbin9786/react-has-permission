@@ -2,8 +2,6 @@
  * 보안 규칙에서 subject에 접근할 수 있을 지 설정한다.
  * 
  * subject를 Redux에서 접근할 수 있게 할 지 결정한다.
- * 
- * 
  */
 class SecurityConfig {
     /**

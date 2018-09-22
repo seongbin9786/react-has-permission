@@ -1,7 +1,15 @@
 import React from 'react';
-import HasPermission from './HasPermission';
+import HasPermission from '../lib/HasPermission';
 
+/**
+ * 게시글의 상세 화면을 표현하는 Presentational Component이다.
+ * post 객체를 전달받아 표시한다.
+ * 
+ * @param {object} post
+ */
 const PostDetail = ({ post }) => {
+
+    if (!post) return null;
 
     const { author, title, content } = post;
     
@@ -11,7 +19,8 @@ const PostDetail = ({ post }) => {
             <div>Title: {title}</div>
             <div>Content: {content}</div>
             <HasPermission target={post} permission='EDIT_POST'>
-                <button>게시글 수정하기</button>
+                <span>우측의 버튼은 수정 권한이 있는 경우만 보임 =></span>
+                <button>수정</button>
             </HasPermission>
         </div>
     );

@@ -1,26 +1,32 @@
 import { Component } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import SecurityConfig from './SecurityConfig';
 import SecurityRuleRepository from './SecurityRuleRepository';
 
+/**
+ * 입력받은 보안 규칙을 시험하여 접근이 허가된 경우에만 children을 표시하는 컴포넌트이다.
+ * 
+ * Redux와 연결되어 있으며, Store에서 subject(사용자 정보 객체)를 props로 받아온다.
+ */
 class HasPermission extends Component {
     constructor() {
         super();
 
         this.state = {
-            allowed: false,
-            subject: {
-                id: 1,
-            }
+            allowed: false
         };
     
         this.grantPermission = this.grantPermission.bind(this);
     }
 
+    /**
+     * Repository에서 가져온 규칙 중 적용할 수 있는 규칙만을 선별하여 배열로 반환한다.
+     * 
+     * @param {string} permission 보안 규칙명
+     */
     getAppliableRulesForPermission(permission) {
-
         console.log(SecurityRuleRepository);
 
         return SecurityRuleRepository
@@ -45,12 +51,18 @@ class HasPermission extends Component {
         securityRules.forEach(rule => console.log('applying:', rule.print()) || rule.judge(environment, this.grantPermission));
     }
 
+    /**
+     * 접근을 허가한다.
+     */
     grantPermission() {
         console.log('Permission Granted!');
 
         this.setState({ allowed: true });
     }
 
+    /**
+     * 컴포넌트가 mount되면 보안 규칙을 확인하고 접근 허가 여부를 계산한다.
+     */
     componentDidMount() {
         const { target, permission } = this.props;
 
